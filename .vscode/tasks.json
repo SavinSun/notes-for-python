@@ -1,0 +1,20 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "args": [
+                "${file}"
+            ],
+            "label": "echo",
+            "type": "shell",
+            "command": "C:\\Users\\w2116\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
