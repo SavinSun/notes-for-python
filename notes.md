@@ -1329,7 +1329,7 @@ def dev(numbers, mean): #计算方差
   return pow(sdev / (len(numbers)-1),0.5)
 
 def median(numbers):
-  sorted(numbers)
+  numbers.sort()
   size = len(numbers)
   if size %2 == 0:
     med = (numbers[size//2-1] + numbers[size//2])/2
@@ -1358,6 +1358,7 @@ print("平均值:{},反差:{:.2},中位数:{}."format(m,dev(n,m),median(n)))
 *[]用来向字典变量中索引或增加元素*
 
 * 错误创建案例 d = {[1,3]:1} 原因:[1,3]为列表,列表可变,不能作为键使用
+* 创建字典时，如果相同键对应不同值，字典采用最后（最新）一个"键值对"。
 
 #### 字典类型操作函数和方法
 
