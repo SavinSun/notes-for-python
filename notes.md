@@ -1532,7 +1532,7 @@ ls = ['中国','美国','法国']
 fo.writelines(ls) #指针在最后
 fo.seek(0) #将指针重新移回开头
 for line in fo:
-  print(line) #从指针开始输出
+    print(line) #从指针开始输出
 fo.close()
 ```
 
@@ -1616,8 +1616,8 @@ for i in range(len(datals)):
 fo = open(fname)
 ls = []
 for line in fo:
-  line = line.replace('\n','') #每行最后都有个\n,去掉
-  ls.append(line.split(','))#以逗号隔开写入列表
+    line = line.replace('\n','') #每行最后都有个\n,去掉
+    ls.append(line.split(','))#以逗号隔开写入列表
 fo.close()
 ```
 
@@ -1627,6 +1627,96 @@ fo.close()
 ls = [[],[],[]] #二维列表
 f = open(fname,'w')
 for item in ls:
-  * f.write(','.join(item) + '\n')
+    f.write(','.join(item) + '\n')
 f.close
+```
+
+#### 二维数据的逐一处理-二层循环
+
+```python
+ls = [[1,2],[3,4],[5,6]]#二维列表
+for row in ls:
+    for column in row:
+        print(column)
+```
+
+## wordcloud库
+
+* wordcloud.WordCloud()代表一个文本对应的词云
+* 可根据词语频率等参数绘制
+* 可设定形状\尺寸和颜色
+* 常规方法 w = wordcloud.WordCloud()
+
+方法|描述
+:-:|:-
+w.generate(txt)|向WordCloud对象w中加载文本txt<br>>>>w.generate('Python and WordCloud')
+w.to_file(filename)|将词云输出为图像文件,.png或.jpg格式<br>w.to_file('outfile.png')
+
+```python
+#常规流程
+import wordcloud
+c = wordcloud.WordCloud() #配置参数
+c.generate('wordcloud by python') #加载词云文本
+c.to_file('1.png')#输出词云文件
+```
+
+文本 -> 
+①分隔:以空格分隔单词
+②统计:单词出现次数并过滤
+③字体:根据统计配置字号
+④布局:研制环境尺寸
+-> 词云
+
+w = wordcloud.WordCloud(<参数>)
+
+参数|描述
+:-:|:-
+width|生成图片的宽度,默认400
+height|生成图片的高度,默认200
+min_font_size|词云中字体最小字号,默认4
+max_font_size|词云中字体最大字号,默认根据高度自动调节
+font_step|词云中字体字号的步进间距,默认1
+font_path|字体文件的路径,默认None
+max_words|词云显示的最大单词数量,默认200
+stopwords|词云的排除词列表
+mask|词云形状,默认长方形,需要引用imread()函数<br>>>>import imageio<br>>>>mk = imageio.imread('pic.png')<br>>>>w=wordcloud.WordCloud(mask=mk)
+background_color|词云图片的背景颜色,默认为黑色
+
+```python
+import wordcloud
+txt = 'life is short, you need python'
+w = wordcloud.WordCloud( background_color = 'white')
+w.generate(txt)
+w.to_file('pywcloud.png')
+```
+![词云实例1](http://wx3.sinaimg.cn/large/6cd6e141ly1ghfttm22c7j207y04fwek.jpg)
+
+```python
+import jieba
+import wordcloud
+txt = '程序设计语言是计算机能够理解和\
+识别用户操作意图的一种交互体系，它按照\
+特定规则组织计算机指令，使计算机能够自\
+动进行各种运算处理。'
+w = wordcloud.WordCloud( width=1000, font_path='msyh.ttc',height=700)
+w.generate(' '.join(jieba.lcut(txt))) #先分词并组成空格分隔字符串
+w.to_file('pycloud.png')
+```
+
+```python
+#政府工作报告词云
+#GovRptWordCloudv1.py
+import jieba
+import wordcloud
+import imageio
+mk = imageio.imread('1.jpg')
+f = open("新时代中国特色社会主义.txt", 'r',encoding='utf-8')
+t = f.read()
+f.close()
+ls = jieba.lcut(t)
+txt = ' '.join(ls)
+w = wordcloud.WordCloud( mask=mk, font_path = 'MSYH.TTC', width = 1000, \
+    height = 700, background_color = 'white',stopwords=['发展'] )
+w.generate(txt)
+w.to_file("grwordcloud.png")
 ```

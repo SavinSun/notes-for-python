@@ -1,18 +1,7 @@
-import turtle as t
-t.penup()
-t.seth(-90)
-t.fd(160)
-t.pendown()
-t.pensize(20)
-t.colormode(255)
-for j in range(10):
-    t.speed(1000)
-    t.pencolor(25*j,5*j,15*j)
-    t.seth(130)
-    t.fd(220)
-    for i in range(23):
-        t.circle(-80,10)
-    t.seth(100)
-    for i in range (23):
-        t.circle(-80,10)
-t.fd(220)
+fo = open('1.csv',encoding='utf-8')
+ls = []
+for line in fo:
+    #line = line.replace('\n','') #把换行去掉
+    ls.append(line.split(','))#以逗号隔开写入列表
+fo.close()
+print(ls)
