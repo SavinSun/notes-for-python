@@ -1288,7 +1288,6 @@ ls.reverse()|将列表ls中的元素反转
 6
 ```
 
-
 ### 序列类型应用场景
 
 * 元组用于元素不改变的应用场景,更多应用于固定搭配场景(可用于数据保护)
@@ -1448,3 +1447,166 @@ for i in range(10):
   print("{0:<10}{1:>5}".format(word, count))
 ```
 
+## 文本
+
+* 操作步骤: 打开-操作-关闭
+* 打开: <变量名> = open(<文件名>, <打开模式>)
+  * <文件名> 'D:\PYE\f.txt' -> 'D:/PYE/f.txt' / 'D:\\PYE\\f.txt' Python中/或\\表\
+    * 同目录可省路径 './PYE/f.txt'  'f.txt'
+
+### 文本的打开
+
+文件的打开模式|描述
+:-:|:-
+'r'|只读模式,默认值,如果文件不存在,返回FileNotFoundError
+'w'|覆写模式,文件不存在则创建,存在则完全覆盖
+'x'|创建写模式,文件不存在则创建,存在则返回FileExistsError
+'a'|追加写模式,文件不存在则创建,存在则在文件最后追加内容
+'b'|二进制文件模式
+'t'|文本文件模式,默认值
+'+'|与r/w/x/a一同使用,在原功能基础上增加同时读写功能
+可混用|如'rt','rb'
+
+### 文本的关闭
+
+* <变量名>.close()
+
+### 文本的读取
+
+操作方法|描述
+:-|:-
+<f>.read(size=-1)|读入全部内容,如果给出参数,读入前size长度 <br> >>>s = f.read(2) <br> 中国
+<f>.readline(size=-1)|读入一行内容,如果给出参数,读入该行前size长度<br>>>>s = f.readline() <br> 中国是一个伟大的国家!
+<f>.readlines(hint=-1)|读入文件所有行,以每行元素形成列表<br>如果给出参数,读入前hint行<br>>>>s = f.readlines()<br>['中国是一个伟大的国家!']
+
+### 文件的全文本操作
+
+* 遍历全文本
+  
+```python
+fname = input("请输入要打开的文件名称:")
+fo = open(fname,'r')
+txt = fo.read() #对全文进行处理,一次读入
+fo.close()
+```
+
+```python
+fname = input("请输入要打开的文件名称:")
+fo = open(fname,'r')
+txt = fo.read(2)
+while txt !='':
+   #对txt处理
+   txt = fo.read(2) #每次读完,指针都在读完的后面
+fo.close()
+```
+
+* 逐行遍历文件
+
+```python
+fname = input("请输入要打开的文件名称:")
+fo = open(fname,'r')
+for line in fo.readlines():  #一次读入,分行处理  readlines()一次读入
+  print(line)
+fo.close()
+```
+
+```python
+fname = input("请输入要打开的文件名称:")
+fo = open(fname,'r')
+for line in fo: #分行读入,逐行处理
+  print(line)
+fo.close()
+```
+
+### 数据的文件写入
+
+操作方法|描述
+:-:|:-
+<f>.write(s)|向文件写入一个字符串或字节流<br>>>>f.write('中国是一个伟大的国家')
+<f>.writelines(lines)|将一个元素全为字符串的列表写入文件<br>>>>ls = ['中国','法国','美国']<br>>>>f.writelines(ls)<br>中国法国美国
+<f>.seek(offset)|改变当前文件指针的位置,offset参数:<br>0 - 文件开头; 1 - 当前位置;2 - 文件结尾<br>>>>f.seek(0) #回到文件开头
+
+```python
+fo = open('output.txt','w+')
+ls = ['中国','美国','法国']
+fo.writelines(ls) #指针在最后
+fo.seek(0) #将指针重新移回开头
+for line in fo:
+  print(line) #从指针开始输出
+fo.close()
+```
+
+### 自动轨迹绘制实例
+
+ 根据脚本来绘制图形
+
+#### 基本思路
+
+* 定义数据文件格式(接口)
+  300,0,144,1,0,0
+  行进距离,转向判断(0左转,1右转),转向角度,RGB三通道
+* 编写程序,根据文件接口解析参数绘制图形
+* 编制数据文件
+
+```python
+#AutoTraceDraw.py
+import turtle as t
+t.title("自动轨迹绘制")
+t.setup(800,600,0,0)
+t.pencolor("red")
+t.pensize(5)
+#数据读取
+datals = []
+f = open('data.txt')
+for line in f:
+    line = line.replace('\n','')
+    datals.append(list(map(eval, line.split(','))))
+f.close()
+#自动绘制
+for i in range(len(datals)):
+    t.pencolor(datals[i][3], datals[i][4], datals[i][5])
+    t.fd(datals[i][0])
+    if datals[i][1]:
+        t.right(datals[i][2])
+    else:
+        t.left(datals[i][2])
+```
+
+### 一维数据的格式化和处理
+
+存储<->表示<->操作
+
+* 一维数据的表示
+  * 如果有序: 列表类型
+  * 如果无序: 集合类型
+* 一维数据的存储
+  * 空格分隔 -数据中不能有空格
+  * 逗号分隔 -英文半角,不换行,数据中不能有逗号
+  * 其他方式 -通用性较差
+* 一维数据的读入
+  * 空格分隔 - ls = txt.split()
+  * 逗号分隔 - ls = txt.split(',')
+  * 其他方式 - ls = txt.split('$')
+* 一维数据的写入处理
+  * 空格分隔 - f.write('',join(ls))
+  * 逗号分隔 - f.write(',',join(ls))
+  * 其他方式 - f.write('$',join(ls))
+
+### 二维数据的格式化和处理
+
+存储<->表示<->操作
+
+* 二维数据的表示
+  * 可用列表形式
+  * 使用两层for遍历每个元素
+  * 外层列表中每个元素可对应一行,也可以对应一列
+* CSV数据存储格式 -Comma-Separated Values
+  * 国际通用的一二维数据存储格式,一般.csv扩展名
+  * 每行一个一维数据,逗号分隔,无空行
+  * 元素缺失,保留逗号
+  * 表头可以作为数据存储,也可以另行存储
+  * 逗号为英文半角,逗号与数据之间无额外空格
+  * 按行存或按列存都可以
+  * 一般索引习惯:ls[row][column],先行后列
+  * 根据一般习惯,外层列表每个元素一行,按行存
+  

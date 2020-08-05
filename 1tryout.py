@@ -1,15 +1,18 @@
-def main():
-    num=[]
-    n = input("请输入一组数字(或者直接按回车结束程序):")
-    while n!='':
-        num.append(eval(n))
-        n = input("请输入一组数字(或者直接按回车结束程序):")
-    else:
-        print("正在处理,请稍等")
-        judge(num)
-def judge(n):
-    if len(n) == len(set(n)):
-        print("鉴定完毕,没有重复的元素")
-    else:
-        print("有重复的元素,总共有{}个".format(len(n) - len(set(n)))  
-main()
+import turtle as t
+t.penup()
+t.seth(-90)
+t.fd(160)
+t.pendown()
+t.pensize(20)
+t.colormode(255)
+for j in range(10):
+    t.speed(1000)
+    t.pencolor(25*j,5*j,15*j)
+    t.seth(130)
+    t.fd(220)
+    for i in range(23):
+        t.circle(-80,10)
+    t.seth(100)
+    for i in range (23):
+        t.circle(-80,10)
+t.fd(220)
