@@ -1609,4 +1609,24 @@ for i in range(len(datals)):
   * 按行存或按列存都可以
   * 一般索引习惯:ls[row][column],先行后列
   * 根据一般习惯,外层列表每个元素一行,按行存
-  
+
+#### 从CSV格式的文件中读入数据
+
+```python
+fo = open(fname)
+ls = []
+for line in fo:
+  line = line.replace('\n','') #每行最后都有个\n,去掉
+  ls.append(line.split(','))#以逗号隔开写入列表
+fo.close()
+```
+
+#### 将数据写入CSV
+
+```python
+ls = [[],[],[]] #二维列表
+f = open(fname,'w')
+for item in ls:
+  * f.write(','.join(item) + '\n')
+f.close
+```
