@@ -430,7 +430,7 @@ print(input("请输入需要反转的字符串")[::-1])
 |str.replace(old,new)|返回字符串str**副本**,所有old字串被替换为new|
 |str.center(width[,fillchar])|字符串str根据宽度width剧中,fillchar可选 "python".center(20,"=")👉'=======python======='|
 |str.strip(chars)|从str中去掉在其左侧和右侧chars中列出的字符 "= python= ".strp(" =np")👉"ytho"
-|str.join(iter)|在iter变量除最后元素外每个元素后增加一个str ",".join("12345")👉"1,2,3,4,5" #主要用于字符串分隔等
+|str.join(iter)|在iter变量除最后元素外每个元素后增加一个str ",".join("12345")👉"1,2,3,4,5" #主要用于字符串分隔等,**是将列表变成分隔好的字符串!**
 
 * **str.split() 当括号内为空,则按字符串内字符中间的空格分隔,若括号内为' ',则会把开头或结尾的空格一并转为列表的一部分**
 
@@ -1447,6 +1447,27 @@ for i in range(10):
   print("{0:<10}{1:>5}".format(word, count))
 ```
 
+***
+
+## 文件
+
+* 存储在辅助存储器上的数据序列
+* 文件是数据的集合和抽象,函数是程序的集合和抽象
+* 文件包括两种类型:文本文件和二进制文件
+* 文本文件可看作是由特定编码的长字符串
+* 二进制文件直接由比特0和比特1组成,如png\avi,无统一字符编码,只能当作字节流
+
+```python
+textFile = open('7.1.txt','rt') #t表示文本文件方式
+print(textFile.readline())
+>>>中国是个伟大的国家!
+textFile.close()
+binFile = open('7-1.txt','rb')#r表示二进制文件方式
+print(binFile.readline())
+>>>b'\xd6\xd0\xd9\xfa\xca\xc7.....'#懒得抄了
+binFile.close()
+```
+
 ## 文本
 
 * 操作步骤: 打开-操作-关闭
@@ -1475,9 +1496,10 @@ for i in range(10):
 
 操作方法|描述
 :-|:-
+<f>.readall()|读入整个文件内容,返回一个字符串或字节流
 <f>.read(size=-1)|读入全部内容,如果给出参数,读入前size长度 <br> >>>s = f.read(2) <br> 中国
 <f>.readline(size=-1)|读入一行内容,如果给出参数,读入该行前size长度<br>>>>s = f.readline() <br> 中国是一个伟大的国家!
-<f>.readlines(hint=-1)|读入文件所有行,以每行元素形成列表<br>如果给出参数,读入前hint行<br>>>>s = f.readlines()<br>['中国是一个伟大的国家!']
+<f>.readlines(hint=-1)|读入文件所有行,**以每行元素形成列表**<br>如果给出参数,读入前hint行<br>>>>s = f.readlines()<br>['中国是一个伟大的国家!']
 
 ### 文件的全文本操作
 
@@ -1529,12 +1551,13 @@ fo.close()
 ```python
 fo = open('output.txt','w+')
 ls = ['中国','美国','法国']
-fo.writelines(ls) #指针在最后
+fo.writelines(ls) #指针在最后 
+#writelines()并不在列表元素后面增加换行,只将列表内容直接排列输出
 fo.seek(0) #将指针重新移回开头
 for line in fo:
     print(line) #从指针开始输出
 fo.close()
-```
+``` 
 
 ### 自动轨迹绘制实例
 
@@ -1720,3 +1743,167 @@ w = wordcloud.WordCloud( mask=mk, font_path = 'MSYH.TTC', width = 1000, \
 w.generate(txt)
 w.to_file("grwordcloud.png")
 ```
+
+***
+
+## PIL库
+
+### 概述
+
+* 图像归档:批处理\生成预览\格式转换等
+* 图像处理:图像基本处理\像素处理\颜色处理等
+* 字库列表
+Image\ImageChops\......
+
+### PIL库Image类解析
+
+from PIL import Image
+
+方法|描述
+:-|:-
+Image.open(filename)|根据参数加载图像文件
+Image.new(mode,size,color)|根据给定参数创建一个新的图像
+Image.open(StringIO.StringIO(buffer))|从字符串中获取图像
+Image.frombytes(mode,size,data))|根据像素点data创建图像
+Image.verify()|对图像文件完整性进行检查,返回异常
+
+* 通过Image打开图像文件时,只读取图像文件头部的问数据信息,标识了格式\颜色\大小等,因此速度十分快
+
+```python
+from PIL import Image
+im = Image.open("D:\\birdnest.jpg")
+```
+
+之后所有操作对im起作用
+
+* Image类常用属性
+
+属性|描述
+:-|:-
+Image.format|标识图像格式或来源,如果图像不是从文件读取,值为None
+Image.mode|图像的色彩模式,'L为灰度图像,'RGB'为真彩色图像,'CMYK'为出版图像
+Image.size|图像宽度和高度,单位是像素(px),返回值是二元元组(tuple)
+Image.palette|调色板属性,返回一个ImagePalette类型
+
+```python
+>>>print(im.format,im.size,im.mode)
+JPEG (900,598) RGB
+```
+
+* Image还能读取序列类图像,如GIF\FLI\FLC\TIFF等,open()方法打开时自动加载序列第一帧,使用seek()和tell()方法在不同帧中移动
+
+方法|描述
+Image.seek(frame)|跳转并返回图像中的指定帧
+Image.tell()|返回当前帧的序号
+
+```python
+#GIF文件图像提取
+from PIL import Image
+im = Image.open('pybit.gif')
+try:
+    im.sava('picframe{:02d}.png'.format(im.tell()))
+    while True:
+        im.seek(im.tell()+1)
+        im.save('picframe{0:2d}.png'.format(im.tell()))
+except:
+    print("处理结束")
+```
+
+* Image类的图像转换和保存方法
+
+方法|描述
+:-|:-
+Image.save(filename,format)|将图像保存为filename文件名,format图片格式
+Image.convert(mode)|使用不同的参数,转换图像为信的格式
+Image.thumbnail(size)|创建图像的缩略图,size是缩略图尺寸的二元元组
+
+```python
+im = Image.open('bird.jpg')
+im.save('bird.png') #如果没有指定,则按filename后缀名格式保存
+im.thumbnail((128,128))
+im.save('birdTN','jpeg') #指定了就按format格式保存
+```
+
+* Image类的旋转和缩放方法
+
+方法|描述
+:-|:-
+Image.resize(size)|按size大小调整图像,生成副本
+Image.rotate(angle)|按angle角度旋转图像,生成副本
+
+* Image类图像像素和通道处理方法
+
+方法|描述
+:-|:-
+Image.point(func)|根据函数func的功能对每个元素进行运算,返回图像副本
+Image.split()|提取RGB图像的每个颜色通道,返回图像副本
+Image.merge(mode,bands)|合并通道,其中mode表示色彩,bands表示新的色彩通道
+Image.blend(im1,im2,alpha)|将两幅图片im1和im2按照如下公式插值后生成新的图像:<br>im1 *(1.0-alpha)+ im2 * alpha
+
+```python
+#图像的颜色交换
+#通过分离RGB图片三个颜色通道
+from PIL import Image
+im = Image.open('bird.jpg')
+r, g, b =im.split()
+om = Image.merge('RGB',(b,g,r))
+om.save('birdBGR.jpg')
+```
+
+```python
+#像素点的操作
+im = Image.open('bird.jpg')
+r,g,b = im.split() #获得RGB通道数据
+newg = g.point(lambda i: i*0.9)#将G通道颜色值变为原来的0.9呗
+newb = b.point(lambda i: i<100)#选择B通道值低于100的像素点
+om = Image.merge(im.mode,(r,newg,newb))#将3个通道合成为新图像
+om.save('birdMerge.jpg')
+```
+
+* 图像的过滤和增强
+
+from PIL import ImageFilter
+
+方法表示|描述
+:-|:-
+ImageFilter.BLUR|图像的模糊效果
+ImageFilter.CONTOUR|图像的轮廓效果
+ImageFilter.DETAIL|图像的细节效果
+ImageFilter.EDGE_ENHANCE|图像的边界加强效果
+ImageFilter.EDGE_ENHANCE_MORE|图像的阈值边界加强效果
+ImageFilter.EMBOSS|图像的浮雕效果
+ImageFilter.FIND_EDGES|图像的边界效果
+ImageFilter.SMOOTH|图像的平滑效果
+ImageFilter.SMOOTH_MORE|图像的阈值平滑下过
+ImageFilter.SHARPEN|图像的锐化效果
+
+```python
+###获取图像轮廓
+from PIL import Image
+from PIL import ImageFilter
+im = Image.open('bird.jpg')
+**om = im.filter(ImageFilter.CONTOUR)**
+om.save('birdContour.jpg')
+```
+
+* ImageEnhance类提供更高级的图像增强功能
+
+from PIL import ImageEnhance
+
+方法|描述
+:-|:-
+ImageEnhance.enhance(factor)|对选择属性的数值增强factor倍
+ImageEnhance.Color(im)|调整图像的颜色平衡
+ImageEnhance.Contrast(im)|调整图像的对比度
+ImageEnhance.Brightness(im)|调整图像的亮度
+ImageEnhance.Sharpness(im)|调整图像的锐度
+
+```python
+#增强图像对比度20倍
+from PIL import Image
+from PIL import ImageEnhance
+im = Image.oepn('bird.jpg')
+om = ImageEnhance.Contrast(im)
+om.enhance(20).save('birdEnContrast.jpg')
+```
+
