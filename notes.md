@@ -814,16 +814,25 @@ main()
 
 * 封装程序用
 * cmd pyinstaller -F<文件名.py>
+* 文件路径中不能出现空格和英文句号
+* 源文件必须是UTF-8编码,暂不支持其他编码类型.IDLE编写的源文件都保存为UTF-8编码形式,可直接使用
 * 常用参数
-  * -h 查看帮助
-  * --clean 清理临时文件
-  * -D, --onedir 默认值,生成dist文件
-  * -F,--onefile 在dist文件夹中只生成独立的打包文件
-  * -i<图标文件名.ico>指定打包程序使用的图标文件
+
+参数|功能
+:-|:-
+-h|查看帮助
+-v,--version|查看pyinstaller版本
+--clean|清理临时文件
+-D,--onedir|默认值,生成dist文件
+-F,--onefile|在dist文件夹中只生成独立的打包文件
+-i<.ico or .exe,ID or .icns><br>--icon<.ico or .exe,ID or .icns>|指定打包程序使用的图标文件
 
 ```python
 pyinstaller -i a.ico -F a.py
 ```
+
+* 动态链接: 使进程再运行时调用不属于程序的代码,若代码由操作系统提供,则精简了程序本身.Windows平台提供大量动态链接库,一般使用dll或ocx为扩展名
+* 静态链接:程序中包含其所调用的所有代码使程序可以再系统间移动而无需考虑库函数是否一致
 
 ***
 
@@ -1878,7 +1887,7 @@ ImageFilter.SMOOTH_MORE|图像的阈值平滑下过
 ImageFilter.SHARPEN|图像的锐化效果
 
 ```python
-###获取图像轮廓
+#获取图像轮廓
 from PIL import Image
 from PIL import ImageFilter
 im = Image.open('bird.jpg')
@@ -1907,3 +1916,426 @@ om = ImageEnhance.Contrast(im)
 om.enhance(20).save('birdEnContrast.jpg')
 ```
 
+### 高维数据的格式化
+
+#### JSON(JavaScript Object Notation) - 推荐
+
+```python
+'本书作者': [ 
+              { '姓氏':'嵩',
+                '名字':'天',
+                '单位':'北京理工大学'  },
+              { '姓氏':'礼',
+                '名字':'欣',
+                '单位':'北京理工大学'  } 
+]
+```
+
+#### XML(Extensible Markup Language)
+
+```python
+<本书作者>
+    <姓氏>嵩</姓氏><名字>天</名字><单位>北京理工大学</单位>
+    <姓氏>礼</姓氏><名字>欣</名字><单位>北京理工大学</单位>
+</本书作者>
+```
+
+## json库
+
+import json
+
+* 两类函数
+  * 操作类函数:完成外部JSON格式与程序内部数据之间的转换功能
+  * 解析类函数:解析键值对内容
+* json格式包括对象{}和数组[]
+  * 一般对象{}被json库解析为字典,数组[]被解析为列表
+
+### json库解析
+
+* 编码(encoding):将Python数据类型👉JSON格式,数据序列化
+* 解码(decoding):从JSON格式中解析数据对应到Python数据类型,数据反序列化
+* 序列化:将对象数据类型转换为可存储或网络传输格式的过程,一般为JSON或XML
+* 反序列化:从存储区域中将JSON或XMLg格式读出并重建对象的过程
+
+函数|描述
+:-|:-
+json.dumps(obj,sort_keys=False,indent=None)|将Python的数据类型转换为JSON格式,编码过程
+json.loads(string)|将JSON格式字符串转换为Python的数据类型,解码过程
+jso.dump(oobj,p,sort_keys=False,indent=None)|与dumps()功能一致,输出到文件fp
+json.load(fp)|与loads()功能一致,从文件fp读入
+
+json.dumps()中的obj可为Python的列表或字典类型.默认生成的字符串按顺序存放,sort_keys可对字典元素按照key进行排列,控制输出结果.indent参数用于增加数据缩进,使生成的JSON格式字符串更具可读性
+
+“sort_keys=True”，使得输出json后对key和value进行0~9、a~z的顺序排序，如果不填，则按照无序排列。
+
+```python
+>>>dt = {'b':2,'c':4,'a':6}
+>>>s1 = json.dumpt(dt) #dumps返回JSON格式的字符串类型
+>>>s2 = json.dumps(dt,sort_keys=True,indent=4) #按顺序排列,缩进为4
+>>>print(s1)
+{'c':4,'a':6,'b':2}
+>>>print(s2)
+{
+    'a':6
+    'b':2
+    'c':4
+}
+>>>print(s1==s2)
+False
+>>>dt2 = json.loads(s2) #将s2重新解码为字典
+>>>print(dt2,type(dt2)) 
+{'c':4,'a':6,'b':2} <class 'dict'> #顺序被打乱,格式被恢复
+```
+
+#### CSV和JSON格式互换
+
+csv:
+![csv](http://wx1.sinaimg.cn/large/6cd6e141ly1ghlrf7kix3j206i0410t2.jpg)
+
+```python
+#csv转json
+import json
+fr = open('price2016.csv','r')
+ls = []
+for line in fr:
+  line = line.replace('\n','')
+  ls.append(line.split(','))
+fr.close()
+fw = open('price2016.json','w')
+for i in range(1,len(ls)):
+  ls[i] = dict(zip(ls[0],ls[i]))
+json.dump(ls[1:],fw,sort_keys=True,indent=4,ensure_ascii=False) #ensure_ascii=False,使json输出非西文字符,而非转换为Unicode
+fw.close()
+```
+
+zip():内置函数,将两个长度相同的列表组合成一个关系对
+
+```python
+>>>x = [1,2,3]
+>>>y = ['a','b','c']
+>>>list(zip(x,y))
+[(1,'a'),(2,'b'),(3,'c')]
+>>>dict(zip(x,y))
+{1:'a',2:'b',3:'c'}
+```
+
+```python
+#json转为csv
+import json
+fr = oepn('price2016','r')
+ls = json.load(fr)
+data = [ list(ls[0].keys())]
+for item in ls:
+  data.append(list(item.values()))
+fr.close()
+fw = open('price2016_from_json.csv','w')
+for item in data:
+  fw.write(','.join(item) + '\n')
+fw.close()
+```
+
+### Python的数据类型转换
+
+函数|描述
+:-|:-
+int(x[,base])|将字符串x转换为一个整数
+float(x)|将字符串x转换为一个浮点数
+complex(real[,imag])|根据real和imag创建一个浮点数
+str(x)|将对象x转换为字符串
+repr(obj)|将对象obj当作Python语句执行,返回结果的字符串形式
+eval(str)|计算字符串中的有效Python表达式,返回结果
+tuple(s)|将序列s转换为一个元组
+list(s)|将序列s转换为一个列表
+chr(x)|将一个整数转换为一个字符
+unichr(x)|将一个整数转换为Unicode字符
+ord(x)|将一个字符转换为它的整数值
+hex(x)|将一个整数转为换一个十六进制字符串
+oct(x)|将一个整数转换为一个十八进制字符串
+
+#### 制作英文学习词典
+
+```python
+dict = {}
+file = None
+digits = '0123456789'
+def readWords():
+    global file
+    file = open('dict.txt','r',encoding = 'GBK')
+    string = file.read()
+def editMode():
+    print('*'*50)
+    print('*'*50)
+    while True:
+        word = input("(按数字键退出)请输入您想添加或修改的单词:")
+        if word in digits:
+            print('*'*50)
+            print('*'*50)
+            return
+        print('---------------------------------')
+        description = input('请输入您的解释:\n')
+        try:
+            dict[word] += ',%s'%description
+        except KeyError:
+            dict[word] = '%s'%description
+        print('------------添加完成--------------')
+def searchMode():
+    print('*'*50)
+    print('*'*50)
+    while True:
+        word = input("(按数字键退出)想查的单词:")
+        if word in digits:
+            print('*'*50)
+            print('*'*50)
+            return
+        print('---------------------------------')
+        try:
+            print(dict[word])
+        except KeyError:
+            print('对不起，这个单词没有收录')
+        print('---------------------------------')
+def interface():
+    readWords()
+    def switch(option):
+        funcdic = {
+            1:lambda: searchMode(),
+            2:lambda: editMode(),
+            3:lambda: exit()
+        }
+        return funcdic[option]()
+    while True:
+        print('----------欢迎使用英汉词典----------')
+        print('1.查询单词\n2.添加单词\n3.退出\n')
+        option = int(input('请输入您的选择：'))
+        switch(option)
+interface()
+```
+
+***
+
+## 自顶向下和自底向上的程序设计方法论
+
+* e.g.体育竞技:两个球员比赛,其中一个球员先发球.👉交替击球直到得分(回合)👉赢方发球👉球员只能再自己的发球局中得分👉先达到15分的球员赢得比赛
+
+### 自顶向下的程序设计
+
+* IPO分析
+  * 输入:两个球员(A和B)的能力概率/模拟比赛的场次
+  * 处理:模拟比赛过程
+  * 输出:球员A和B分别赢得球赛的概率
+
+* 1.顶层设计
+  * 步骤一:打印介绍性信息
+  * 步骤二:获得需要的参数,即probA,probB,n
+  * 步骤三:利用球员A和B的能力值probA和probB,模拟n次比赛
+  * 步骤四:输出球员A和B获胜比赛的场次及概率
+
+* 步骤一:打印介绍性信息 - 顶层设计一般不写出具体代码,仅给出函数定义
+
+```python
+def main():
+  printIntro()
+```
+
+* 步骤二:获得用户输入-假设程序如果调用了getInputs()即获得probA\probB\n
+
+```python
+def main():
+  printIntro()
+  probA, probB, n = getInputs()
+```
+
+* 步骤三:使用probA\probB模拟n场比赛,并返回结果
+
+```python
+def main():
+  printIntro()
+  probA, probB, n = getInputs()
+  winsA, winsB = simNGames(n, probA, probB)
+```
+
+* 步骤四:输出结果
+
+```python
+def main():
+  printIntro()
+  probA, probB, n = getInputs()
+  winsA, winsB = simNGames(n, probA, probB)
+  printSummary(winsA, winsB)
+```
+
+* 2.第n层设计 - 实现或进一步抽象第n层函数
+![设计框架1](http://wx4.sinaimg.cn/large/6cd6e141ly1ghms0yvadyj20gd058gm9.jpg)
+  * 每层从左向右执行
+  * 每个函数用一个矩形表示
+  * 连接两个矩形的线表示上面函数对下面函数的调用关系
+  * 箭头和注释表示函数之间的输入和输出
+  * 每层设计中,参数和返回值的设计是重点,其他细节可以暂时忽略
+
+```python
+def printIntro(): #输出一个程序介绍
+  print("这个程序模拟两个选手A和B的某种竞技比赛")
+  print("程序运行需要A和B的能力值(以0到1之间的小数表示)")
+```
+
+```python
+def getInputs(): #根据提示获得3个需要返回主程序的值
+  a = eval(input("请输入选手A的能力值(0-1):"))
+  b = eval(input("请输入选手B的能力值(0-1):"))
+  n = eval(input("模拟比赛的场次:"))
+  return a, b, n
+```
+
+```python
+def simNGames(n, probA, probB):#程序核心,模拟n场比赛,跟踪积录每个球员的获胜次数,值观而粗的涉及,类似一个顶层设计
+  winsA, winsB = 0, 0
+  for i in range(n):
+    scoreA, scoreB = simOneGame(probA, probB)#simOneGame()用于模拟一场比赛
+    if scoreA > socreB:
+      winsA += 1
+    else:
+      winsB += 1
+  return winsA, winsB
+```
+
+simOneGame()需要知道球员概率,返回球员最终得分,更新整体结构如下
+![设计框架2](http://wx4.sinaimg.cn/large/6cd6e141ly1ghmszw4vi7j20eo06p755.jpg)
+
+```python
+def simOneGame(probA, probB):
+  scoreA, scoreB = 0, 0
+  serving = 'A' #开球方
+  while not gameOver(scoreA, scoreB): #设置比赛结束条件,封装该函数有助于简化不同规则修改函数的代价,提高代码可维护性.
+    if serving == 'A':
+      if random() < proA:
+        scoreA += 1
+      else:
+        serving = 'B'
+    else:
+      if random() < proB:
+        scoreB += 1
+      else:
+        serving = 'A'
+  return scoreA, scoreB
+```
+
+gameOver()函数跟踪分数变化并在比赛结束时返回True,未结束返回False,然后继续循环
+![设计框架3](http://wx1.sinaimg.cn/large/6cd6e141ly1ghmt4j6y3gj20ea08zt9r.jpg)
+
+```python
+def gameOver(a,b):
+  return a==15 or b==15
+```
+
+最后是printSummary()函数
+
+```python
+def printSummary(winsA, winsB):
+  n = winsA + winsB
+  print('经济分析开始,共模拟{}场比赛'.format(n))
+  print('选手A获胜{}场比赛,占比{:0.1%}'.format(winsA,winsA/n))
+  print('选手B获胜{}场比赛,占比{:0.1%}'.format(winsB,winsB/n))
+```
+
+全部结合,则
+
+```python
+#e15.1MatchAnalysis.py
+from random import random
+def printIntro(): #输出一个程序介绍
+  print("这个程序模拟两个选手A和B的某种竞技比赛")
+  print("程序运行需要A和B的能力值(以0到1之间的小数表示)")
+
+def getInputs(): #根据提示获得3个需要返回主程序的值
+  a = eval(input("请输入选手A的能力值(0-1):"))
+  b = eval(input("请输入选手B的能力值(0-1):"))
+  n = eval(input("模拟比赛的场次:"))
+  return a, b, n
+
+def simNGames(n, probA, probB):#程序核心,模拟n场比赛,跟踪积录每个球员的获胜次数,值观而粗的涉及,类似一个顶层设计
+  winsA, winsB = 0, 0
+  for i in range(n):
+    scoreA, scoreB = simOneGame(probA, probB)#simOneGame()用于模拟一场比赛
+    if scoreA > socreB:
+      winsA += 1
+    else:
+      winsB += 1
+  return winsA, winsB
+
+def simOneGame(probA, probB):
+  scoreA, scoreB = 0, 0
+  serving = 'A' #开球方
+  while not gameOver(scoreA, scoreB): #设置比赛结束条件,封装该函数有助于简化不同规则修改函数的代价,提高代码可维护性.
+    if serving == 'A':
+      if random() < proA:
+        scoreA += 1
+      else:
+        serving = 'B'
+    else:
+      if random() < proB:
+        scoreB += 1
+      else:
+        serving = 'A'
+  return scoreA, scoreB
+
+def gameOver(a,b):
+  return a==15 or b==15
+
+def printSummary(winsA, winsB):
+  n = winsA + winsB
+  print('经济分析开始,共模拟{}场比赛'.format(n))
+  print('选手A获胜{}场比赛,占比{:0.1%}'.format(winsA,winsA/n))
+  print('选手B获胜{}场比赛,占比{:0.1%}'.format(winsB,winsB/n))
+def main():
+  printIntro()
+  probA, probB, n = getInputs()
+  winsA, winsB = simNGames(n, probA, probB)
+  printSummary(winsA, winsB)
+main()
+```
+
+* 总结
+  * 步骤1:将算法表达为一系列销问题
+  * 步骤2:为每个小问题设计接口
+  * 步骤3:通过将算法表达为接口关联的多个小问题来细化算法
+  * 步骤4:为每个小问题重复上述过程
+
+### 自底向上执行
+
+* 执行中等规模程序的最好方法是从结构图最底层开始,然后逐步上升
+* 先运行和测试每一个基本函数,再测试由基础函数组成的整体函数,有助于定位错误
+* 利用import保留字辅助开展单元测试
+import <源文件名称> (源文件名称不能出现英文句号)
+
+```python
+>>>import e151MatchAnalysis
+>>>e151MatchAnalysis.gameOver(15,10)
+True
+>>>e151MatchAnalysis.gameOver(10,1)
+False
+```
+
+即GameOver()函数通过测试
+
+***
+
+### pip python第三方库的安装
+
+* pip命令需要通过命令行执行
+* install\download\uninstall\list\show\search
+pip install <库名>
+pip install -U <库名> #更新库
+pip uninstall <库名>
+pip list 列出已安装的第三方库
+pip show <库名> 查询某个已安装库的详细信息
+pip download <库名> 只下载,不安装
+pip search <关键字> 搜索库名或摘要中的关键字
+
+* Python官网的第三方库索引功能(the Python Package Index, PyPI) 
+<https://pypi.python.org/pypi>
+* Windows下无法安装的,可以试试美国加州大学尔湾分校的页面,获得Windows可直接安装的第三方库文件
+<http://www.lfd.uci.edu/~gohlke/pythonlibs/>
+  * 下载适合自己Python版本解释器和系统的对应whl,然后用pip安装该文件
+  * pip install \<path>
+
+* 可以直接从网上下载 py 文件，拷贝到 python 安装路径的第三方库目录下
+whl: Python库的一种打包格式,用于通过pip安装,本质为压缩文件,可改为zip查看其中内容,用于替代早期的eggs格式
