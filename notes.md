@@ -1392,7 +1392,7 @@ len(d)|返回字典d中元素的个数
 
 #### jieba使用
 
-* 精确模式:不存在荣誉单词
+* 精确模式:不存在冗余单词
 * 全模式:返回所有可能的词语,有冗余
 * 搜索引擎模式:在精确模式基础上,对长词再次切分
 
@@ -2219,7 +2219,7 @@ def simOneGame(probA, probB):
 ```
 
 gameOver()函数跟踪分数变化并在比赛结束时返回True,未结束返回False,然后继续循环
-![设计框架3](http://wx1.sinaimg.cn/large/6cd6e141ly1ghmt4j6y3gj20ea08zt9r.jpg)
+![设计框架3](http://wx3.sinaimg.cn/large/6cd6e141ly1ghnzkrmzk8j20hy087ab6.jpg)
 
 ```python
 def gameOver(a,b):
@@ -2314,6 +2314,29 @@ True
 False
 ```
 
+### 模块化设计 - 程序化设计模式
+
+* 通过函数或对象封装将程序划分为模块及模块间的表达
+* 具体包括:主程序\子程序和子程序之间的关系
+* 分而治之:一种分而治之\分层抽象\体系化的设计思想
+* 紧耦合:两个部分之间交流很多,无法独立存在
+* 松耦合:两个部分之间交流较少,可以独立存在
+* 模块内部紧耦合\模块之间松耦合
+
+### 配置化设计 - 程序化设计模式
+
+* 程序引擎+配置文件
+* 将程序开发变成配置文件编写,扩展功能而不修改程序
+* 关键在于接口设计,清晰明了\灵活可扩展
+
+### 应用开发的四个步骤
+
+1. 产品定义:对应用需求充分理解和明确定义,不仅是功能定义,要考虑商业模式
+2. 系统架构:以系统方式思考产品的技术实现,关注数据流\模块化\体系架构
+3. 设计与实现:结合架构完成关键设计及系统实现,结合可扩展性\灵活性等进行设计优化
+4. 用户体验:从用户角度思考应用效果,用户至上,体验优先,以用户为中心
+
+
 即GameOver()函数通过测试
 
 ***
@@ -2330,6 +2353,7 @@ pip show <库名> 查询某个已安装库的详细信息
 pip download <库名> 只下载,不安装
 pip search <关键字> 搜索库名或摘要中的关键字
 
+* 优质的计算生态 <http://python123.io>
 * Python官网的第三方库索引功能(the Python Package Index, PyPI) 
 <https://pypi.python.org/pypi>
 * Windows下无法安装的,可以试试美国加州大学尔湾分校的页面,获得Windows可直接安装的第三方库文件
@@ -2339,3 +2363,113 @@ pip search <关键字> 搜索库名或摘要中的关键字
 
 * 可以直接从网上下载 py 文件，拷贝到 python 安装路径的第三方库目录下
 whl: Python库的一种打包格式,用于通过pip安装,本质为压缩文件,可改为zip查看其中内容,用于替代早期的eggs格式
+* PyPI的权重值:根据每个库被检索和下载的情况计算权重值(Weight),较高的通常质量较好s
+* 可使用Python标准库os的system()函数调用控制台,批量安装库
+
+```python
+#自动化脚本安装
+import os
+libs = {'numpy','matplotlib','pillow'}
+try:
+  for lib in libs:
+    os.system('pip install '+lib) #通过调用系统控制台CMD执行命令
+  print("Successful")
+except:
+  print("Failed Somehow")
+```
+
+* 自动化脚本+
+  * 编写各类自动化运行该程序的脚本,调用已有程序
+  * 扩展应用:安装更多第三方库,增加配置文件
+  * 扩展异常检测:捕获更多异常类型,程序更稳定友好
+
+
+```python
+#8.4 用wordcloud和jieba对三国演义进行词云分析
+def printIntro():
+    print("「三国演义」词云分析开始")
+def fenci():
+    import jieba
+    words = []
+    print("开始分词处理")
+    txt = open('threekingdoms.txt',encoding='UTF-8').read()
+    words = ' '.join(jieba.lcut(txt))
+    print("分词处理完毕")
+    return words
+def wordcloud():
+    print("开始词云处理")
+    import wordcloud
+    w = wordcloud.WordCloud(font_path = 'MSYH.TTC',\
+         width = 1000, height = 700, background_color= 'white')
+    w.generate(fenci())
+    w.to_file('「三国演义」词云分析.png')
+    print("词云处理完毕")
+def main():
+    printIntro()#介绍信息
+    wordcloud()#词云
+main()
+```
+
+***
+
+### 用户体验及产品
+
+* 关心功能实现,更要关心用户体验
+* 编程只是手段,不是目的
+
+* 进度展示  
+  * 如果程序需要计算时间,可能产生等待,请增加进度展示
+  * 如果程序有若干步骤,需要提示用户,请增加进度展示
+  * 如果程序可能存在大量次数的循环,请增加进度展示
+* 异常处理
+  * 当获得用户输入,对合规性需要检查,需要异常处理
+  * 当读写文件,对结果进行判断,需要异常处理
+  * 当进行输入输出时,对运算结果进行判断,需要异常处理
+* 其他
+  * 打印输出:特定位置,输出程序运行的过程信息
+  * 日志文件:对程序异常及用户使用进行定期记录
+  * 帮助信息:给用户多种方式提供帮助信息
+
+## OS库
+
+* 路径操作:os.path子库,处理文件路径及信息
+* 进程管理:启动系统中其他程序
+* 环境参数:获得系统软硬件信息等环境参数
+
+### 路径操作
+
+import os.path
+
+函数|描述
+:-|:-
+os.path.abspath(path)|返回path在当前系统中的绝对路径<br>>>>os.path.abspath('file.txt')<br>'C:\\Users\\Tian\\file.txt'
+os.path.normpath(path)|归一化path的表示形式,统一用\\分隔路径<br>>>>os.path.normpath('D://PYE//file.txt')<br>'D:\\PYE\\file.txt'
+os.path.relpath(path)|返回当前程序与文件之间的相对路径(relative path)<br>os.path.relpath('C://PYE//file.txt')<br>'..\\..\\..\\PYE\\file.txt'
+os.path.dirname(path)|返回path中的目录名称<br>>>>os.path.dirname('D://PYE//file.txt')<br>'D://PYE'
+os.path.basename(path)|返回path中最后的文件名称<br>>>>os.path.basename('D://PYE//file.txt')<br>'file.txt'
+os.path.join(path, *paths)|组合path与paths, 返回一个路径字符串<br>>>>os.path.join('D:/','PYE/file.txt')<br>'D:\PYE\file.txt'
+os.path.exists(path)|判断path对应文件或目录是否存在,返回True或False<br>>>>os.path.exists('D://PYE//file.txt')<br>False
+os.path.isfile(path)|判断path所对应是否为已存在的文件,返回True或False<br>>>>os.path.isfile('D://PYE//file.txt')<br>True
+os.path.isdir(path)|判断path所对应是否为已存在的目录,返回True或False<br>>>>os.path.isdir('D://PYE//file.txt')<br>False
+os.path.getatime(path)|(a->access)返回path对应文件或目录上一次的访问时间<br>>>>os.path.getatime('D:/PYE/file.txt')<br>1518356633.7551725
+os.path.getmtime(path)|(m->modify)返回path对应文件或目录最近一次的修改时间<br>os.path.getmtime('D:/PYE/file.txt')<br>1518356633.7551725
+os.path.getctime(path)|(c->create)返回path对应文件或目录的创建时间<br>>>>time.ctime(os.path.getcime('D:/PYE/file.txt'))<br>'Sun Feb 11 21:43:53 2018'
+os.path.getsize(path)|返回path对应文件的大小,以字节为单位<br>>>>os.path.getsize('D:/PYE/file.txt')<br>180768
+
+### 进程管理
+
+import os
+os.system(command)
+
+* 执行程序或命令command
+* 在Windows系统中,返回值为cmd的调用返回信息 (0即正常结束)
+
+### 环境参数 - 获取或改变系统环境信息
+
+函数|描述
+:-|:-
+os.chdir(path)|修改当前程序操作的路径<br>>>>os.chdir('D:')
+os.getcwd()|返回程序的当前路径<br>>>>os.getcwd()<br>'D:\\'
+os.getlogin()|获得当前系统登录用户名称<br>>>>os.getlogin()<br>'Tian Song'
+os.cpu_count()|获得当前系统的CPU数量<br>>>>os.cpu_count()<br>8
+os.urandom()|获得n个字节长度的随机字符串,通常用于加解密运算<br>os.urandom(10)<br>b'7\xbe\xf2!\xc1=\x01gL\xb3'
