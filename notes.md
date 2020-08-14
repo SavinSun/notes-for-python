@@ -1847,7 +1847,7 @@ Image.rotate(angle)|按angle角度旋转图像,生成副本
 Image.point(func)|根据函数func的功能对每个元素进行运算,返回图像副本
 Image.split()|提取RGB图像的每个颜色通道,返回图像副本
 Image.merge(mode,bands)|合并通道,其中mode表示色彩,bands表示新的色彩通道
-Image.blend(im1,im2,alpha)|将两幅图片im1和im2按照如下公式插值后生成新的图像:<br>im1 *(1.0-alpha)+ im2 * alpha
+Image.blend(im1,im2,alpha)|将两幅图片im1和im2按照如下公式插值后生成新的图像:<br>im1 *(1.0-alpha)+ im2* alpha
 
 ```python
 #图像的颜色交换
@@ -1921,13 +1921,13 @@ om.enhance(20).save('birdEnContrast.jpg')
 #### JSON(JavaScript Object Notation) - 推荐
 
 ```python
-'本书作者': [ 
+'本书作者': [
               { '姓氏':'嵩',
                 '名字':'天',
                 '单位':'北京理工大学'  },
               { '姓氏':'礼',
                 '名字':'欣',
-                '单位':'北京理工大学'  } 
+                '单位':'北京理工大学'  }
 ]
 ```
 
@@ -1983,7 +1983,7 @@ json.dumps()中的obj可为Python的列表或字典类型.默认生成的字符�
 >>>print(s1==s2)
 False
 >>>dt2 = json.loads(s2) #将s2重新解码为字典
->>>print(dt2,type(dt2)) 
+>>>print(dt2,type(dt2))
 {'c':4,'a':6,'b':2} <class 'dict'> #顺序被打乱,格式被恢复
 ```
 
@@ -2336,7 +2336,6 @@ False
 3. 设计与实现:结合架构完成关键设计及系统实现,结合可扩展性\灵活性等进行设计优化
 4. 用户体验:从用户角度思考应用效果,用户至上,体验优先,以用户为中心
 
-
 即GameOver()函数通过测试
 
 ***
@@ -2354,7 +2353,7 @@ pip download <库名> 只下载,不安装
 pip search <关键字> 搜索库名或摘要中的关键字
 
 * 优质的计算生态 <http://python123.io>
-* Python官网的第三方库索引功能(the Python Package Index, PyPI) 
+* Python官网的第三方库索引功能(the Python Package Index, PyPI)
 <https://pypi.python.org/pypi>
 * Windows下无法安装的,可以试试美国加州大学尔湾分校的页面,获得Windows可直接安装的第三方库文件
 <http://www.lfd.uci.edu/~gohlke/pythonlibs/>
@@ -2382,7 +2381,6 @@ except:
   * 编写各类自动化运行该程序的脚本,调用已有程序
   * 扩展应用:安装更多第三方库,增加配置文件
   * 扩展异常检测:捕获更多异常类型,程序更稳定友好
-
 
 ```python
 #8.4 用wordcloud和jieba对三国演义进行词云分析
@@ -2473,3 +2471,192 @@ os.getcwd()|返回程序的当前路径<br>>>>os.getcwd()<br>'D:\\'
 os.getlogin()|获得当前系统登录用户名称<br>>>>os.getlogin()<br>'Tian Song'
 os.cpu_count()|获得当前系统的CPU数量<br>>>>os.cpu_count()<br>8
 os.urandom()|获得n个字节长度的随机字符串,通常用于加解密运算<br>os.urandom(10)<br>b'7\xbe\xf2!\xc1=\x01gL\xb3'
+
+***
+
+#### 数字的鲁棒输入
+
+获得用户输入的一个数字，可能是浮点数或复数，如果是整数仅接收十进制形式，且只能是数字。对输入数字进行平方运算，输出结果。
+要求:
+(1)无论用户输入何种内容,程序无错误;
+(2)如果输入有误,输出'输入有误'.
+
+```python
+s = input()
+try:
+  if complex(s) == complex(eval(s)): #complex()把s转化为复数
+    print(eval(s)**2)
+except:
+  print('输入有误')
+```
+
+***
+
+## numpy库
+
+* 处理多维数组(ndarray),简称数组
+* ndarray类型的维度(dimensions)叫做轴(axes),轴的个数教秩(rank)
+* 命名较多,容易混淆,建议import numpy as np
+
+### numpy库解析
+
+* 常用创建数组函数
+
+函数|描述
+:-|:-
+np.array([x,y,z], dtype=int)|从Python列表和元组创造数组
+np.arrange(x,y,i)|创建一个由x到y,以i为步长的数组
+np.linspace(x,y,n)|创建一个由x到y,等分成n个元素的数组
+np.indices((m,n))|创建一个m行n列的矩阵
+np.random.rand(m,n)|创建一个m行n列的随机数组
+np.ones((m,n),dtype)|创建一个m行n列全1的数组,dtype是数据类型
+np.emtpy((m,n),dtype)|创建一个m行n列全0的数组,dtype是数据类型
+
+* ndarray类基本属性
+
+属性|描述
+:-|:-
+ndarray.ndim|数组轴的个数,也被称作秩
+ndarray.shape|数组在每个维度上大小的整数元组
+ndarray.size|数组元素的总个数
+ndarray.dtype|数组元素的数据类型,dtype类型可以用于创建数组
+ndarray.itemsize|数组追踪每个元素的字节大小
+ndarray.data|包含实际数组元素的缓冲区地址
+ndarray.flat|数组元素的迭代器
+
+```python
+>>> import numpy as np
+>>> a = np.ones((4,5))
+>>> print(a)
+[[1. 1. 1. 1. 1.]
+ [1. 1. 1. 1. 1.]
+ [1. 1. 1. 1. 1.]
+ [1. 1. 1. 1. 1.]]
+>>> a.ndim
+2
+>>> a.shape
+(4, 5)
+>>> a.dype
+>>> a.dtype
+dtype('float64')
+```
+
+* 数组在numpy中被当作对象,可用<a>.<b>()方式调用一些方法
+
+方法|描述
+:-|:-
+ndarray.reshape(n,m)|不改变数组ndarray,返回一个维度为(n,m)的数组
+ndarray.resize(new_shape)|与reshape()作用相同,直接修改数组ndarray
+ndarray.swapaxes(ax1,ax2)||将数组n个维度中任意两个维度进行调换
+ndarray.flatten()|对数组进行降维,返回一个折叠后的一维数组
+ndarray.ravel()|做用同np.flatten(),但是返回数组的一个视图
+
+* 索引和切片方法
+
+方法|描述
+:-|:-
+x[i]|索引第i个元素
+x[-i]|从后向前索引第i个元素
+x[n:m]|默认步长为1,从前向后索引,不包含m
+x[-m:-n]|默认步长为1,从后向前索引,结束位置为n
+x[n,m,i]|指定i步长的由n到m的索引
+
+```python
+>>> a = np.random.rand(5,3) #生成5x3的数组,用随机数填充
+>>> a
+array([[0.88262164, 0.81484174, 0.23537438],
+       [0.72996856, 0.63335688, 0.87700489],
+       [0.71183526, 0.43514945, 0.74879941],
+       [0.13614501, 0.86417918, 0.96293933],
+       [0.85621333, 0.28586039, 0.44876406]])
+>>> a[2] #获得第2行数据
+array([0.71183526, 0.43514945, 0.74879941])
+>>> a[1:3]
+array([[0.72996856, 0.63335688, 0.87700489],
+       [0.71183526, 0.43514945, 0.74879941]])
+>>> a[-5:-2:2]
+array([[0.88262164, 0.81484174, 0.23537438],
+       [0.71183526, 0.43514945, 0.74879941]])
+```
+
+* 运算函数
+  * 输出参数y可选,如果没有指定,将创建并返回一个新的数组保存计算结果
+
+函数|描述
+:-|:-
+np.add(x1,x2[,y])|y = x1 + x2
+np.subtract(x1, x2 [,y])|y = x1 - x2
+np.multiply(x1, x2[,y])|y = x1 * x2
+np.divide(x1, x2[,y])|y = x1/ x2
+np.floor_divide(x1,x2[,y])|y = x1 // x2 , 返回值取整
+np.negative(x[,y])|y = -x
+np.power(x1, x2[,y])|y = x1**x2
+np.remainder(x1, x2 [,y])|y = x1 % x2
+
+* 比较运算函数
+
+函数|符号描述
+:-|:-
+np.equal(x1,x2[,y])|y = x1 == x2
+np.not_equal(x1,x2[,y])|y = x1 != x2
+np.less(x1,x2[,y])|y = x1 < x2
+np.less_equal(x1,x2[,y])|y = x1 > x2
+np.greater_equal(x1,x2[,y])|y = x1 >= x2
+np.where(condition[x,y])|根据给出的条件判断输出x还是y
+
+上表将返回一个布尔数组,包含两个数组中对应元素值的比较结果;where()函数是三元表达式x if condition else y 的矢量版本
+
+```python
+>>>np.less([1,2],[2,2])
+array ([ True, False], dtype=bool)
+```
+
+* 其他运算函数
+函数|描述
+:-|:-
+np.abs(x)|计算基于元素的整型\浮点或复数的绝对值
+np.sqrt(x)|计算每个元素的平方根
+np.squre(x)|计算每个元素的平方
+np.sign(x)|计算每个元素的符号:1(+)\0\-1(-)
+np.ceil(x)|计算大于或等于每个元素的最小值
+np.floor(x)|计算小于或等于每个元素的最大值
+np.rint(x[,out])|圆整,取每个元素为最近的整数,保留数据类型
+np.exp(x[,out])|计算每个元素的指数值
+np.log(x),np.log10(x),np.log2(x)|计算自然对数(e)\基于10\2的对数,log(1+x)
+
+* numpy库还包括三角运算函数\傅里叶变换\随机和概率分布\基本数值统计\位运算\矩阵运算等功能
+
+### 图像的手绘效果
+
+以北京故宫照片为例
+
+```python
+>>>from PIL import Image
+>>>import numpy as np
+>>>im = np.array(Image.open('D:\\pycodes\\fcity.jpg'))
+>>>print(im.shape,im.dtype)
+(881,1266,3) uint8
+```
+
+图像转换对应的ndarray类型是三维数据,如(881,1266,3),前两位为图像的长度和宽度,单位是像素,第三维表示每个像素点的RGB值,每个RGB值是一个单字节整数
+
+```python
+>>>im = np.array(Image.open('D:\\pycodes\\fcity.jpg')).convert('L')
+#convert()函数的'L'模式表示将像素从RGB的3字节形式转变为单一数值形式,这个数值范围为0~255,表示灰度色彩变化.此时,图像从彩色变为带有灰度的黑白色
+#转换后,图像的ndarray类型变为二维数据,每个像素点色彩只由一个整数表示
+>>>print(im.shape, im.dtype)
+(881, 1266) uint8
+```
+
+* 通过对图像的数组转换,可以利用numpy访问图像上的任意像素值
+
+```python
+>>>print(im[20,300])
+120
+>>>print(int(in.min())),int(im.max())
+0 255
+>>>print(im[10,:])
+[114 113 115 ..., 123 122 123]
+```
+
+* 可通过任意数学操作获取相应的图像变换
