@@ -2660,3 +2660,125 @@ np.log(x),np.log10(x),np.log2(x)|计算自然对数(e)\基于10\2的对数,log(1
 ```
 
 * 可通过任意数学操作获取相应的图像变换
+* 以灰度变换为例,分别对灰度变化后的图像进行反变换\区间变化和像素值平方处理
+* 有些数学变换会改变图像的数据类型,所以重新生成PIL图像前要先将数据类型通过 numpy.uint()变换成整数
+
+```python
+>>>im0 = np.array(Image.open('np.jpg').convert('L'))
+>>>im1 = 255 - im0 #反变换
+>>>im2 = (100/255)*im0 + 150 #区间变换
+>>>im3 = 255*(im1/255)**2#像素平方处理
+>>>pil_im = Image.fromarray(np.uint(im1))#分别对im1\im2\im3执行
+>>>pil_im.show()
+```
+
+![变换结果](http://wx4.sinaimg.cn/large/6cd6e141ly1ghq96u7ht4j20ho0dy7b4.jpg)
+
+灰度值:指黑白图像中电的颜色深度,范围从0到255,黑色为0,白色为255,因此,黑白图像也被称为灰度图像,主要用于构建非可见光图像,如超声波图像,RGB图片可通过如下公市转换成灰度值:$Gray = R * 0.3 + G * 0.59 + B * 0.11$
+
+***
+
+## matplotblib库
+
+### matplotlib.pyplot 库
+
+* 是matplotlib的子库,引用方式如下
+import matplotlib.pyplot as plt
+
+* 为了正确显示中文字体,请用以下代码更改默认设置,其中'SimHei'表示黑体字
+
+```python
+>>>import matplotlib
+>>>matplotlib.rcParams['font.family']='SimHei'
+>>>matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+```
+
+字体名称|字体英文表示
+:-|:-
+宋体|SimSun
+黑体|SimHei
+楷体|KaiTi
+微软雅黑|Microsoft YaHei
+隶书|LiSu
+仿宋|FangSong
+幼圆|YouYuan
+华文宋体|STSong
+华文黑体|STHeiti
+苹果丽中黑|Apple LiGothic Medium
+
+* 部分字体不被matplotlib库支持
+* matplotlib库由一系列有组织有隶属关系的对象构成,对基础构图过于复杂,因此提供pyplot子模块,将绘图所需要的对象构建过程封装在函数中,对用户提供了更加友好的接口
+
+#### matplot.lib.pyplot库解析
+
+* 使用plt代替matplotlib.pyplot
+* 函数采用plt.<b>()调用,<b>为具体函数名称
+
+函数|描述
+:-|:-
+plt.figure(figsize=None,facecolor=None)|创建一个全局绘图区域
+plt.axes(rect,axibg='w')|创建一个坐标系风格的子绘图区域
+plt.subplot(nrowds,ncols,plot_number)|在全局绘图区域中创建一个子绘图区域
+plt.subplots_adjust|调整子绘图区域的布局
+
+figure()函数创建一个全局绘图区域,并使它成为当前绘图对象,figsize指定宽度和高度,单位为英寸
+
+```python
+>>>plt.figure(figsize=(8,4))
+```
+
+绘制图像前也可不调用figure()函数创建全局绘图区域,此时,plt子库会自动创建一个默认的绘图区域,显示绘图区域的代码:
+
+```python
+>>>plt.show()
+```
+
+subplot()用于在全局绘图区域内创建子绘图区域,其参数表示将全局绘图区域分成nrows行和ncols列,并根据先行后列的计数方式在plot_number位置生成一个坐标系,实例代码如下,3个参数关系如图9.3所示.其中,全局绘图区域被分割成3*2的网格,在第4个位置绘制了一个坐标系
+
+```python
+>>>plt.subplot(324)
+>>>plt.show()
+```
+
+axes()默认创建一个subplot(111)坐标系,参数rec = [left,bottom,width,height]中4个变量的范围都为[0,1],表示坐标系与全局绘图的关系;axisbg指背景色,默认为white,现在以被facecolor代替,fc
+
+```python
+>>>plt.axes([0.1,0.1,0.7,0.3], fc = 'y')
+>>>plt.show()
+```
+
+![subplot()函数的参数关系](http://wx3.sinaimg.cn/large/6cd6e141ly1ghtm35r8ybj20g10ciwhy.jpg)
+
+plt子库提供了一组读取和显示相关的函数,用于在绘图区域中增加显示内容及读入数据
+
+函数|描述
+:-|:-
+plt.legend()|在绘图区域中放置绘图标签(也称图注)
+plt.show()|显示创建的绘图对象
+plt.matshow()|在窗口显示数组矩阵
+plt.imshow()|在axes上显示图像
+plt.imsave|保存数组为图像文件
+plt.imread()|从图像文件中读取数组
+
+17个用于绘制'基础图表'的常用函数
+
+操作|描述
+plt.plot(x,y,label,color,width)|根据x,y数组绘制直\曲线
+plt.boxplot(data,notch,position)|绘制一个箱型图(Box-plot)
+plt.bar(left,height,width,bottom)|绘制一个条形图
+plt.barh(bottom,width,height,left)|绘制一个横向条形图
+plt.polar(theta,r)|绘制极坐标图
+plt.pie(data,explode)|绘制饼图
+plt.psd(x,NFFT=256,pad_to,Fs)|绘制功率谱密度图
+plt.specgram(x,NFFT=256,pad_to,F)|绘制谱图
+plt.cohere(x,y,NFFT-256,Fs)|绘制X-Y的相关性函数
+plt.scatter()|绘制散点图(x,y是长度相同的序列)
+plt.step(x,y,where)|绘制步阶图
+plt.hist(x,bins,normed)|绘制直方图
+plt.contour(X,Y,Z,N)|绘制等值线
+plt.vlines()|绘制垂直线
+plt.stem(x,y,linefmt,markerfmt,basefmt)|绘制曲线每个点到水平轴线的垂线
+plt.plot_datea()|绘制数据日期
+plt.plotfile()|绘制数据后写入文件
+
+plot()函数是用于绘制直线的最基础的函数,调用方式很灵活,x和y可以是numpy计算出的数组,并用关键字参数指定各种属性.其中,label表示设置标签并在图例(lengend)中显示,color表示曲线的颜色,linewidth表示曲线的宽度.在字符串前后添加$符号,matplotlib会使用其内置的latex引擎绘制数学公式
