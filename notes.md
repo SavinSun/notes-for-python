@@ -2541,7 +2541,7 @@ ndarray.flat|数组元素的迭代器
 dtype('float64')
 ```
 
-* 数组在numpy中被当作对象,可用<a>.<b>()方式调用一些方法
+* 数组在numpy中被当作对象,可用\<a\>\.\<b\>()方式调用一些方法
 
 方法|描述
 :-|:-
@@ -2763,6 +2763,7 @@ plt.imread()|从图像文件中读取数组
 17个用于绘制'基础图表'的常用函数
 
 操作|描述
+:-|:-
 plt.plot(x,y,label,color,width)|根据x,y数组绘制直\曲线
 plt.boxplot(data,notch,position)|绘制一个箱型图(Box-plot)
 plt.bar(left,height,width,bottom)|绘制一个条形图
@@ -2781,4 +2782,557 @@ plt.stem(x,y,linefmt,markerfmt,basefmt)|绘制曲线每个点到水平轴线的�
 plt.plot_datea()|绘制数据日期
 plt.plotfile()|绘制数据后写入文件
 
-plot()函数是用于绘制直线的最基础的函数,调用方式很灵活,x和y可以是numpy计算出的数组,并用关键字参数指定各种属性.其中,label表示设置标签并在图例(lengend)中显示,color表示曲线的颜色,linewidth表示曲线的宽度.在字符串前后添加$符号,matplotlib会使用其内置的latex引擎绘制数学公式
+* plot()函数是用于绘制直线的最基础的函数,调用方式很灵活,x和y可以是numpy计算出的数组,并用关键字参数指定各种属性.其中,label表示设置标签并在图例(lengend)中显示,color表示曲线的颜色,linewidth表示曲线的宽度.在字符串前后添加\$符号,matplotlib会使用其内置的latex引擎绘制数学公式
+
+```python
+#绘制基本的三角函数
+import numpy as np
+import matplotlib.pyplot as plt
+x = np.linspace(0,6,100)
+y = np.cos(2 * np.pi * x) * np.exp(-x) + 0.8
+plt.plot(x, y, 'k', color = 'r', linewidth=3)
+plt.show()
+```
+
+![基本三角函数绘制](http://wx4.sinaimg.cn/large/6cd6e141ly1ghts1cd6apj20m80gogmp.jpg)
+
+* plt库有两个坐标体系:图像坐标和数据坐标
+* 图像坐标将图像所在区域左下角视为原点,将x方向和y方向长度设为1.
+* 整体绘图区域有一个图像坐标,每个axes()和subplot()函数产生的子图也有属于自己的图像坐标.
+* axes()函数参数rect指当前产生的子区域相对于整个绘图区域的图像坐标
+* 数据坐标以当前绘图区域的坐标轴为参考,显示每个数据点的相对位置,这与坐标系里标记数据点一致
+
+* 与plt库坐标轴设置相关的函数
+
+函数|描述
+:-|:-
+plt.axis('v','off','equal','scaled','tight','image')|获取设置轴属性的快捷方法
+plt.xlim(xmin,xmax)|设置当前x轴取值范围
+plt.ylim(ymin,ymax)|设置当前y轴取值范围
+plt.xscale()|设置x轴缩放
+plt.yscale()|设置y轴缩放
+plt.autoscale()|自动缩放轴视图的数据
+plt.text(x,y,s,fontdic,widthdash)|为axes图轴添加注释
+plt.thetagrids(angles,labels,fmt,frac)|设置极坐标网络theta的位置
+plt.grid(on/off)|打开或关闭坐标网络
+
+```python
+>>>plt.plot([1,2,4],[1,2,3])
+>>>plt.axis()#获得当前坐标轴范围
+(0.85, 4.15, 0.9, 3.1)
+>>>plt.axis([0,5,0,8])#4个变量分别是[xmin,xmax,ymin,ymax]
+>>>plt.show()
+```
+
+![输出结果](http://wx2.sinaimg.cn/large/6cd6e141ly1ghtsnb4qr7j20m80got98.jpg)
+
+* 设置坐标系标签的相关函数
+
+函数|描述
+:-|:-
+plt.figlegend(handles,label,loc)|为全局绘图区域放置图注
+plt.legend()|为当前坐标图放置图注
+plt.xlabel(s)|设置当前x轴的标签
+plt.ylabel(s)|设置当前y轴的标签
+plt.xticks(array,'a','b','c')|设置当前x轴刻度位置的标签和值
+plt.yticks(array,'a','b','c')|设置当前y轴刻度位置的标签和值
+plt.clabel(cs,v)|为等值线图设置标签
+plt.get_figlabels()|返回当前绘图区域的标签列表
+plt.figtext(x,y,s,fontdic)|为全局绘图区域添加文字
+plt.title()|设置标题
+plt.suptitle()|为当前绘图区域添加中心标题
+plt.text(x,y,s,fontdic,withdash)|为坐标图轴添加注释
+plt.annotate(note,xy,xytext,xycoords,textcoords,arrowprops)|用箭头在指定数据点创建一个注释或一段文本
+
+```python
+#带标签的坐标系
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.rcParams['font.family'] = 'SimHei'
+matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+plt.plot([1,2,4],[1,2,3])
+plt.title('坐标系标题')
+plt.xlabel('时间(s)')
+plt.ylabel('范围(m)')
+plt.xticks([1,2,3,4,5],[r'$\pi/3$',r'$2\pi/3$',r'$\pi$',\
+    r'$4\pi/3$',r'$5\pi/3$'])
+plt.show()
+```
+
+![带标签的坐标系](http://wx2.sinaimg.cn/large/6cd6e141ly1ghtt3hhklqj20m80goq42.jpg)
+
+* plt库提供3个区域填充函数
+
+函数|描述
+:-|:-
+fill(x,y,c,color)|填充多边形
+fill_between(x,y1,y2,where,color)|填充两条曲线围成的多边形
+fill_between(y,x1,x2,where,hold)|填充两条水平线之间的区域
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+x = np.linspace(0, 10, 100)
+y = np.cos(2*np.pi*x) * np.exp(-x)+0.8
+plt.plot(x,y,'k',color='r',label='$exp-decay$',linewidth=3)
+plt.axis([0,6,0,1.8])
+ix = (x>0.8) & (x<3)
+plt.fill_between(x, y, 0, where = ix,\
+    facecolor='grey', alpha=0.25)
+plt.text(0.5*(0.8+3),0.2,r'$\int_a^b f(x)\mathrm{d}x$',\
+    horizontalalignment='center')
+plt.legend()
+plt.show()
+```
+
+![绘制结果](http://wx1.sinaimg.cn/large/6cd6e141ly1ghttns95vzj20m80go3zv.jpg)
+
+## 从数据处理到人工智能
+
+* 数据表示-> 数据清洗 -> 数据统计 -> 数据可视化 -> 数据挖掘 -> 人工智能
+
+-数据表示:采用合适方式用程序表达数据
+-数据清理:数据归一化\数据转换\异常值处理
+-数据统计:数据的概要理解,数量\分布\中位数等
+-数据可视化:直观展示数据内涵的方式
+-数据挖掘:从数据分析获得知识,产生数据外的价值
+-人工智能:数据/语言/图像/视觉等方面深度分析与决策
+
+### 数据分析
+
+#### Numpy:表达N维数组的最基础库
+
+* Python接口使用,C语言实现,计算速度优异
+* Python数据分析及科学计算的基础库,支撑Pandas等
+* 提供直接的矩阵运算\广播函数\线性代数等功能
+* <http://www.numpy.org>
+![Numpy](http://wx1.sinaimg.cn/large/6cd6e141ly1ghuy30cnroj20jn056dgt.jpg)
+
+#### Pandas:Python数据分析高层次应用库
+
+* 提供了简单易用的数据结构和数据分析工具
+* 理解数据类型与索引的关系,操作索引即操作数据
+* Python最主要的数据分析功能库,基于Numpy开发
+* <http://pandas.pydata.org>  
+Serires = 索引 + 一维数据  
+DataFrame = 行列索引 + 二维数据
+
+#### SciPy:数学\科学和工程计算功能库
+
+* 提供一批数学算法及工程数据运算功能
+* 类似Matlab,可用于如傅里叶变换\信号处理等应用
+* Python最主要的科学计算功能库,基于Numpy开发
+* <http://www.scipy.org>
+![SciPy](http://wx2.sinaimg.cn/large/6cd6e141ly1ghuzymzvf9j20k907rmz8.jpg)
+
+### 数据可视化
+
+#### Matplotlib:高质量的二维数据可视化功能库
+
+* 提供超过100种数据可视化展示效果
+* 通过matploblib.pyplot子库调用各可视化效果
+* Python最主要的数据可视化功能库,基于Numpy开发
+* <http://matplotlib.org>
+![matplotlib](http://wx1.sinaimg.cn/large/6cd6e141ly1ghv011bfyqj20ky099wk9.jpg)
+
+#### Seaborn:统计类数据可视化功能库
+
+* 提供一批高层次的统计类数据可视化展示效果
+* 主要展示数据间分布\分类和线性关系等内容
+* 基于Matplotlib开发,支持Numpy和Pandas
+* <http://seaborn.pydata.org>
+![Seaborn](http://wx3.sinaimg.cn/large/6cd6e141ly1ghv03wykohj20nk048abu.jpg)
+
+#### Mayavi:三位科学数据可视化功能库
+
+* 提供一批简单易用的3D科学计算数据可视化展示效果
+* 目前版本是Mayavi2,三维可视化最主要的第三方库
+* 支持Numpy\TVTK\Traits\Envisage等第三方库
+* <http://docs.enthought.com/mayavi/mayavi>
+![Mayavi](http://wx2.sinaimg.cn/large/6cd6e141ly1ghv063yho2j20kx05swl0.jpg)
+
+### 文本处理
+
+#### PyPDF2:用来处理pdf文件的工具集
+
+* 提供了一批处理PDF文件的计算功能
+* 支持获取信息\分隔\整合文件\加密解密等
+* 完全由Python语言实现,不需要额外依赖,功能稳定
+* <http://mstamy2.github.io/PyPDF2>
+
+```python
+from PyPDF2 import PdfFileReader, PdfFileMerger
+merger = PdfFileMerger()
+input1 = open('文件1.pdf','rb')
+input2 = open('文件2.pdf','rb')
+merger.append(fileobj = input1, pages = (0,3))
+merger.merge(position = 2, fileobj = input2, pages = (0,1))
+output = open('output.odf','wb')
+merger.write(output)
+```
+
+#### NLTK:自然语言文本处理第三方库
+
+* 提供了一批简单易用的自然语言文本处理功能
+* 支持语言文本分类\标记\语法句法\语义分析等
+* 最优秀的Python自然语言处理库
+* <http://www.nltk.org>
+
+```python
+from nltk.corpus import treebank
+t = treebank.parsed_sents('wsj_0001.mrg')[0]
+t.draw()
+```
+
+![NLTK](http://wx3.sinaimg.cn/large/6cd6e141ly1ghv0gm7y2ij20ok07mgnx.jpg)
+
+#### Pyhon-docx:创建或更新Microsoft Word文件的第三方库
+
+* 提供创建或更新.doc .docx等文件的计算功能
+* 增加并配置段落\图片\表格\文字等,功能全面
+* <http://python-docx.readthedocs.io/en/latest/index.html>
+
+```python
+from docx iport Document
+document = Document()
+document.add_heading('Document Title',0)
+p = document.add_paragraph('A plain paragragh having some')
+document.add_add_page_break()
+document.save('demo.docx')
+```
+
+### 机器学习
+
+#### Scikit-learn:机器学习方法工具集
+
+* 提供一批统一化的机器学习方法功能接口
+* 提供聚类\分类\回归\强化学习等计算功能
+* 机器学习最基本且最优秀的Python第三方库
+* <http://scikit-learn.org>
+![Scikit-learn](http://wx4.sinaimg.cn/large/6cd6e141ly1ghv0r7wio9j20t20ew1ca.jpg)
+
+#### TensorFlow:AlphaGo背后的机器学习计算框架
+
+* 谷歌公司推动的开源机器学习框架
+* 将数据流图作为基础,图节点代表运算,边代表张量
+* 应用机器学习方法的一种方式,支撑谷歌人工智能应用
+* <https://www.tensorflow.org>
+
+```python
+import tensorflow as tf
+init = tf.global_variables_initializer()
+sess = tf.Session()
+se..run(init)
+res = sess.run(result)
+print('result:',res)
+```
+
+#### MXNet:基于神经网络的深度学习计算框架
+
+* 提供可扩展的神经网络及深度学习计算功能
+* 可用于自动驾驶\机器翻译\语音识别等众多领域
+* Python最重要的深度学习计算框架
+* <https://mxnet.incubator.apache.org>
+![MXNet](http://wx4.sinaimg.cn/large/6cd6e141ly1ghv0uuzh9kj20kx06aaf0.jpg)
+
+***
+
+### 霍兰德人格分析雷达图 实例展示
+
+```python
+#HollandRadarDraw
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.rcParams['font.family']='SimHei'
+radar_labels = np.array(['研究型(I)','艺术型(A)','社会型(S)',\
+                         '企业型(E)','常规型(C)','现实型(R)']) #雷达标签
+nAttr = 6
+data = np.array([[0.40, 0.32, 0.35, 0.30, 0.30, 0.88],
+                 [0.85, 0.35, 0.30, 0.40, 0.40, 0.30],
+                 [0.43, 0.89, 0.30, 0.28, 0.22, 0.30],
+                 [0.30, 0.25, 0.48, 0.85, 0.45, 0.40],
+                 [0.20, 0.38, 0.87, 0.45, 0.32, 0.28],
+                 [0.34, 0.31, 0.38, 0.40, 0.92, 0.28]]) #数据值
+data_labels = ('艺术家', '实验员', '工程师', '推销员', '社会工作者','记事员')
+angles = np.linspace(0, 2*np.pi, nAttr, endpoint=False)
+data = np.concatenate((data, [data[0]]))
+angles = np.concatenate((angles, [angles[0]]))
+fig = plt.figure(facecolor="white")
+plt.subplot(111, polar=True)
+plt.plot(angles,data,'o-', linewidth=1, alpha=0.2)
+plt.fill(angles,data, alpha=0.25)
+plt.thetagrids(angles*180/np.pi, radar_labels,frac = 1.2)
+plt.figtext(0.52, 0.95, '霍兰德人格分析', ha='center', size=20)
+legend = plt.legend(data_labels, loc=(0.94, 0.80), labelspacing=0.1)
+plt.setp(legend.get_texts(), fontsize='large')
+plt.grid(True)
+plt.savefig('holland_radar.jpg')
+plt.show()
+```
+
+![霍兰德人格分析](http://wx2.sinaimg.cn/large/6cd6e141ly1ghv9kuzub7j20gc0d5771.jpg)
+
+***
+
+### 网络爬虫
+
+#### Requests:最友好的网络爬虫功能库
+
+* 提供简单易用的类HTTP协议网络爬虫功能
+* 支持连接池\SSL\Cookies\HTTP(S)代理等
+* Python最主要的页面级网络爬虫功能库
+* <http://www.python-requests.org>
+
+```python
+import requests
+r = requests.get('https://api.github.com/user',\
+    auth = ('user','pass'))
+r.status_code
+r.headers['content-type']
+r.encoding
+r.text
+```
+
+#### Scrapy:优秀的网络爬虫框架
+
+* 提供了构建网络爬虫系统的框架功能,功能半成品
+* 支持批量和定时网页爬取\提供数据处理流程等
+* Python最主要且最专业的网络爬虫框架
+* <https://scrapy.org>
+![Scrapy](http://wx3.sinaimg.cn/large/6cd6e141ly1ghvyfqrb4oj20gw0ahmzv.jpg)
+
+### pyspider:强大的Web页面爬取系统
+
+* 提供了完整的网页爬取系统构建功能
+* 支持数据库后端\消息队列\优先级\分布式架构等
+* Python重要的网络爬虫类第三方库
+* <http://docs.pypider.org>
+![pyspider](http://wx3.sinaimg.cn/large/6cd6e141ly1ghvyhfgmn5j20kc0avdk6.jpg)
+
+### Web信息提取
+
+#### Beautiful Soup:HTML和XML的解析库
+
+* 提供了解析HTML和XML等Web信息的功能
+* 又名beautifulsoup4或bs4,可以加载多种解析引擎
+* 常与网络爬虫库搭配使用,如Scrapy\requests等
+* <https://www.crummy.com/software/BeautifulSoup/bs4>
+![BeautifulSoup](http://wx2.sinaimg.cn/large/6cd6e141ly1ghvyk223mlj20ha069gmn.jpg)
+
+#### Re:正则表达式解析和处理功能库
+
+* 提供了定义和解析正则表达式的一批通用功能
+* 可用于各类场景,包括定点的Web信息提取
+* Python最主要的标准库之一,无需安装
+* <https://docs.python.org/3.6/library/re.html>
+![Re](http://wx2.sinaimg.cn/large/6cd6e141ly1ghvylz7ndoj20mb04tmxn.jpg)
+
+#### Python-Goose:提取文章类型Web页面的功能库
+
+* 提供了对Web页面中文章信息/视频等元数据的提取功能
+* 针对特定类型Web页面,应用覆盖面较广
+* Python最主要的Web信息提取库
+* <https://github.com/grangier/python-goose>
+
+```python
+from goose import Goose
+url = 'http://www.elmundo.es/elmundo/2012/10/28/espana/1351388909.html'
+g = Goose({'use_meta_language':False,'taget_language':'es'})
+article = g.extract(url=url)
+article.cleaned_text[:150]
+```
+
+### Web网站开发
+
+#### Django:最流行的Web应用框架
+
+* 提供了构建Web系统的基本应用框架
+* MTV模式:模型(model)\模板(Template)\视图(Views)
+* Python最重要的Web应用框架,略微复杂的应用框架
+* <https://www.djangoproject.com>
+![Django](http://wx4.sinaimg.cn/large/6cd6e141ly1ghvyqjlbncj20iw07a75z.jpg)
+
+#### Pyramid:规模适中的Web应用框架
+
+* 提供了简单方便构建Web系统的应用框架
+* 不大不小,规模适中,适合快速构建并适度扩展类应用
+* Python产品级Web应用框架,起步简单可扩展性好
+* <https://trypyramid.com>
+
+```python
+from wsgiref.simple_server import make_server
+from pyramid.config import Configurator
+from pyramid.response import Response
+def hello_world(request):
+    return Response('Hello World!')
+if __name__ == '__main__':
+    with Configurator() as config:
+        config.add_route('hello','/')
+        config.add_view(hello_world, route_name = 'hello')
+        app = config.make_wsgi_app()
+    server = make_server('0.0.0.0', 6543, app)
+    server.serve_forever()
+```
+
+#### Flask:Web应用开发微框架
+
+* 提供最简单构建Web系统的应用框架
+* 简单\规模小\快速
+* Django > Pyramid > Flask
+* <http://flask.pocoo.org>
+
+```python
+from flask import Flask
+app = Flask(__name__)
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+```
+
+### 网络应用开发
+
+#### WeRoBot:微信公众号开发框架
+
+* 提供解析微信服务器消息及反馈消息的功能
+* 建立微信机器人的重要技术手段
+* <https://github.com/offu/WeRoBot>
+
+```python
+import werobot
+robot = werobot.WeRoBot(token='tokenhere')
+@robot.handler
+def hello(message):
+    return 'Hello World!'
+```
+
+#### aip:百度AI开放平台接口
+
+* 提供了访问百度AI服务的Python功能接口
+* 语音\人脸\OCR\NLP\知识图谱\图像搜索等领域
+* Python百度AI应用的最主要方式
+* <https://github.com/Baidu-AIP/python-sdk>
+![aip](http://wx4.sinaimg.cn/large/6cd6e141ly1ghvzhsw7wxj20de03uab8.jpg)
+
+#### MyQR:二维码生成第三方库
+
+* 提供了生成二维码的系列功能
+* 基本二维码\艺术二维码和动态二维码
+* <https://github.com/sylnsfar/qrcode>
+![MyQR](http://wx2.sinaimg.cn/large/6cd6e141ly1ghvzivdblvj20e4049wj3.jpg)
+
+### 图形用户界面
+
+#### PyQt5:Qt开发框架的Python接口
+
+* 提供了创建Qt5程序的Python API接口
+* Qt是非常成熟的跨平台桌面应用开发系统,完备GUI
+* 推荐的Python GUI开发第三方库
+* <https://www.riverbankcomputing.com/software/pyqt>
+![PyQt5](http://wx2.sinaimg.cn/large/6cd6e141ly1ghvzncbmzqj20hd060gm3.jpg)
+
+#### wxPython:跨平台GUI开发框架
+
+* 提供了专用于Python的跨平台GUI开发框架
+* 理解数据类型与索引的关系,操作索引即操作数据
+* <https://www.wxpython.org>
+
+```python
+import wx
+app = wx.App(False)
+frame = wx.Frame(None, wx.ID_ANY, 'Hello World')
+frame.Show()
+app.MainLoop()
+```
+
+#### PyGObject:使用GTK+开发GUI的功能库
+
+* 提供了整合GTK+\WebKitGTK+等库的功能
+* GTK+:跨平台的一种用户图形界面GUI框架
+* 实例:Anaconda采用该库构建GUI
+* <https://pygobject.readthedocs.io>
+
+```python
+import gi
+gi.require_version('Gtk','3.0')
+from gi.repository import Gtk
+window = Gtk.Window(title='Hello World')
+window.show()
+window.connect('destory', Gtk.main_quit)
+Gtk.main()
+```
+
+### 游戏开发
+
+#### PyGame:简单的游戏开发功能库
+
+* 提供了基于SDL的简单游戏开发功能及实现引擎
+* 理解游戏对外部输入的响应机制及角色构建和交互机制
+* Python游戏入门最主要的第三方库
+* <http://pygame.org>
+![PyGame](http://wx3.sinaimg.cn/large/6cd6e141ly1ghvztr4afqj20mb06edmf.jpg)
+
+#### Panda3D:开源\跨平台的3D渲染和游戏开发库
+
+* 一个3D游戏引擎,提供Python和C++两种接口
+* 支持很多先进特性:法线贴图\光泽贴图\卡通渲染等
+* 由迪士尼和卡尼吉梅隆大学共同开发
+* <http://www.panda3d.org>
+![Panda3D](http://wx2.sinaimg.cn/large/6cd6e141ly1ghvzv6cuqjj20n105445f.jpg)
+
+#### cocos2d:构建2D游戏和图形界面交互式应用的框架
+
+* 提供了基于OpenGL的游戏开发图形渲染功能
+* 支持GPU加速,采用树形结构分层管理游戏对象类型
+* 适用于2D专业级游戏开发
+* <http://python.cocos2d.org>
+![cocos2d](http://wx1.sinaimg.cn/large/6cd6e141ly1ghvzwhhyjej20mi05pwk6.jpg)
+
+### 虚拟现实
+
+#### VR Zero:在树莓派上开发VR应用的Python库
+
+* 提供大量与VR开发相关的功能
+* 针对树莓派的VR开发库,支持设备小型化,配置简单化
+* 非常适合初学者实践VR开发及应用
+* <https://github.com/WayneKeenan/python-vrzero>
+![VR Zero](http://wx4.sinaimg.cn/large/6cd6e141ly1ghvzy8jqhdj20n806idol.jpg)
+
+#### pyovr:Oculus Rift的Python开发接口
+
+* 针对Oculus VR设备的Python开发库
+* 基于成熟的VR设备，提供全套文档，工业级应用设备
+* Python+虚拟现实领域探索的一种思路
+* <https://github.com/cmbruns/pyovr>
+![pyovr](http://wx2.sinaimg.cn/large/6cd6e141ly1ghvzzy746xj20kq06kq4v.jpg)
+
+#### Vizard:基于Python的通用VR开发引擎
+
+* 专业的企业级虚拟现实开发引擎
+* 提供详细的官方文档
+* 支持多种主流的VR硬件设备，具有一定通用性
+* <http://www.worldviz.com/vizard-virtual-reality-software>
+![Vizard](http://wx2.sinaimg.cn/large/6cd6e141ly1ghw11ld5hqj20mo069do6.jpg)
+
+### 图形艺术
+
+#### Quads: 迭代的艺术
+
+* 对图片进行四分迭代，形成像素风
+* 可以生成动图或静图图像
+* 简单易用，具有很高展示度
+* <https://github.com/fogleman/Quads>
+![Quads](http://wx4.sinaimg.cn/large/6cd6e141ly1ghw12manl5j20lt05zjxm.jpg)
+
+#### ascii_art: ASCII艺术库
+
+* 将普通图片转为ASCII艺术风格
+* 输出可以是纯文本或彩色文本
+* 可采用图片格式输出
+* <https://github.com/jontonsoup4/ascii_art>
+![ascii_art](http://wx3.sinaimg.cn/large/6cd6e141ly1ghw1kxzehbj20nj09igv3.jpg)
+
+#### turtle:海龟绘图体系
+
+* <https://docs.python.org/3/library/turtle.html>
+
